@@ -1,16 +1,4 @@
-<?php
-session_start();
 
-if(isset($_SESSION['username'])){
-    if($_SESSION['role'] == 0){
-        header("location: http://localhost/renal-web/admin/index.php");
-    }elseif ($_SESSION['role'] == 1) {
-        header("location: http://localhost/renal-web/user-doctor.php");
-    }elseif ($_SESSION['role'] == 2) {
-        header("location: http://localhost/renal-web/user-staff.php");
-    }
-}
-?>
 <!doctype html>
 <html>
 
