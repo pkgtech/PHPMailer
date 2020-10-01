@@ -25,7 +25,7 @@ if(isset($_SESSION['username'])){
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
 <style>
-body::before {
+.container-fluid::before {
     margin: 0;
     padding: 0;
     content: "";
@@ -77,7 +77,7 @@ h1 {
 </style>
 
 <body>
-    <div class="container-fluid">
+    <div class="container-fluid border">
         <h1 class="animate__animated animate__slideInLeft"><strong>Renal Project</strong></h1>
         <form action="<?php $_SERVER['PHP_SELF']; ?>" class="animate__animated animate__slideInRight" method="POST">
             <h3 class="heading">Register</h3>
@@ -119,7 +119,8 @@ h1 {
             use PHPMailer\PHPMailer\PHPMailer;
             use PHPMailer\PHPMailer\SMTP;
             use PHPMailer\PHPMailer\Exception;
-        if(isset($_POST['login'])){
+
+            if(isset($_POST['login'])){
             $conn = mysqli_connect("localhost", "root", "", "users") or die("Conn Failed" . $conn->connect_error);
 
             $name = mysqli_real_escape_string($conn, $_POST['name']);
@@ -130,45 +131,40 @@ h1 {
             $email = mysqli_real_escape_string($conn, $_POST['email']);
             $password = mysqli_real_escape_string($conn, $_POST['password']);
 
-            $sql = "INSERT INTO `mailer` (`name`, `dob`, `qualification`, `institute`, `intern`, `username`, `password`) VALUES ('$name', '$dob', '$qualification', '$institute', '$intern', '$email', '$password');";
-            $result = mysqli_query($conn, $sql);
-            if(mysqli_num_rows($result)){
-                echo '<script src="text/javascript">alert "Success";</script>';
-                // Load Composer's autoloader
-
-                // Instantiation and passing `true` enables exceptions
+            $sql = "INSERT INTO `mailer` (`name`, `dob`, `qualification`, `institute`, `intern`, `username`, `password`) VALUES ('$name', '$dob', '$qualification', '$institute', '$intern', '$email', '$password')";
+            $result = mysqli_query($conn, $sql) or die("Query Failed!");
+            if($result > 0){ 
+                // Mailer
                 $mail = new PHPMailer(true);
 
                 try {
-                    //Server settings
-                    $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      // Enable verbose debug output
+                    $mail->SMTPDebug = 2;                      // Enable verbose debug output
                     $mail->isSMTP();                                            // Send using SMTP
-                    $mail->Host       = 'smtp.gmail.com';                    // Set the SMTP server to send through
+                    $mail->Host       = 'smtp.gmail.com';                    // Set the SMTP server to send 
                     $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
                     $mail->Username   = 'cardemo16@gmail.com';                     // SMTP username
                     $mail->Password   = 'Qwer@1234';                               // SMTP password
-                    $mail->SMTPSecure = 'tls';         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
-                    $mail->Port       = 587;                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
-                    //Recipients
-                    $mail->setFrom('cardemo16@gmail.com', 'Rajesh');
+                    $mail->SMTPSecure = 'tls';         // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS`
+                    $mail->Port       = 587;                                    // TCP port to connect to, use 
+                    $mail->setFrom('cardemo16@gmail.com');   // Sender
                     $mail->addAddress($email, $name);     // Add a recipient
 
-                    // Content
                     $mail->isHTML(true);                                  // Set email format to HTML
                     $mail->Subject = 'Registration Details';
                     $mail->Body    = 'Hi, '. $name .',<br><hr><h2>Thank You For Registering.</h2><br><b>Here is your registeration details</b><br> Qualification :'. $qualification .'<br> Institute : '. $institute.'<br>Intern For : '.$intern.'<br>Mail :'.$email;
+
                     $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
                     $mail->send();
-                    echo 'Message has been sent';
+                    echo "Registered Successfully. Message sent to mail.";
+                    // header("Location: index.php");
+                    exit;
                 } catch (Exception $e) {
                     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
                 }
-            }
-            
+            }    
         }
         ?>
     </div>
 </body>
-
 </html>
